@@ -6,36 +6,48 @@ run("Fluorescent Cells");
 
 run("Duplicate...", "title=duplicate_image duplicate");
 
+// Split channels
 selectWindow("duplicate_image");
-run("Split Channels");
+run("8-bit");
 
 // Change lookup table for all images
 // This will only work if number of channels = 3
-selectWindow("C1-duplicate_image");
+Stack.setChannel(1);
 run("Enhance Contrast", "saturated=0.35");
 run("Magenta");
 
-selectWindow("C2-duplicate_image");
+Stack.setChannel(2);
 run("Enhance Contrast", "saturated=0.35");
 run("Green");
 
-selectWindow("C3-duplicate_image");
+Stack.setChannel(3);
 run("Enhance Contrast", "saturated=0.35");
 run("Cyan");
 
-// Make an overlay image
-run("Merge Channels...", "c1=C1-duplicate_image c2=C2-duplicate_image c3=C3-duplicate_image keep");
+// make a duplicate that will be used to make an overlay
+run("Duplicate...", "title=Overlay duplicate");
 
-// Make a stack not a multichannel image
-selectWindow("RGB");
-rename("RGB_duplicate_image");
+// Split channles
+selectWindow("duplicate_image");
+run("Split Channels");
+
+// Make an overlay image
+// I do this after i make the split, so that this image will come after the since channel images in the stack/montage
+selectWindow("Overlay");
+run("Flatten");
+rename("C4_duplicate_image"); // Rename image so that it has the word duplicate_image in the title
+
+// Make a stack from all channels and overlay image
 run("Images to Stack", "  title=duplicate_image use"); // will combine all images with the phrase duplicate_image in its tile
 
 // Make the montage
+// This also converts all images to RGB if one of them is RGB
 run("Make Montage...", "columns=4 rows=1 scale=0.50");
 
-// Close Stack window
+// Close tmp windows
 selectWindow("Stack");
+run("Close");
+selectWindow("Overlay");
 run("Close");
 
 // Homework
