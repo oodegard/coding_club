@@ -1,5 +1,5 @@
 #@ File    (label = "Input directory", style = "directory") srcFile
-#@ File    (label = "Output directory", style = "directory") dstFile
+## File    (label = "Output directory", style = "directory") dstFile
 #@ String  (label = "File extension", value=".tif") ext
 #@ String  (label = "File name contains", value = "") containString
 #@ boolean (label = "Keep directory structure when saving", value = true) keepDirectories
@@ -19,18 +19,16 @@ from ij.text import TextWindow
 from ij.measure import ResultsTable
 import glob
 
-def run2():
-	srcDir = srcFile.getAbsolutePath()
-	dstDir = dstFile.getAbsolutePath()
-	rt = makeResultsTable(dstDir, nuc_seg_ext, nucleus_annotation_ext)
-	
 def run():
 	srcDir = srcFile.getAbsolutePath()
-	dstDir = dstFile.getAbsolutePath()
-	
-	
+	#dstDir = dstFile.getAbsolutePath()
+	dstDir = srcDir + "_" + output_folder_name
+
 	if srcDir == dstDir:
 		sys.exit("srcDir == dstDir is not allowed")
+	if not os.path.exists(dstDir):
+		os.mkdir(dstDir)		
+	
 	for root, directories, filenames in os.walk(srcDir):
 		filenames.sort();
 		for filename in filenames:
@@ -42,6 +40,7 @@ def run():
 				continue
 			process(srcDir, dstDir, root, filename, keepDirectories)
 	rt = makeResultsTable(dstDir, nuc_seg_ext, nucleus_annotation_ext)
+	rt.save(os.path.join(dstDir, "Results.tsv"))
  
 def process(srcDir, dstDir, currentDir, fileName, keepDirectories):
 	print "Processing:"
@@ -72,11 +71,13 @@ def process(srcDir, dstDir, currentDir, fileName, keepDirectories):
 		rm_nuc_rois = findNucleus(imp, nuc_ch, rm_nuc_rois)
 		
 		## Save
-		if(rm_nuc_rois.getCount() > 0):
-			rm_nuc_rois.save(nuc_roi_zip_name + ".zip")
-		else:
+		if(rm_nuc_rois.getCount() == 0):
 			IJ.saveString("No ROIs", nuc_roi_zip_name + ".txt")
-		# Does this work for one Roi?
+		elif(rm_nuc_rois.getCount() == 1):
+			rm_nuc_rois.save(nuc_roi_zip_name + ".roi")
+		elif(rm_nuc_rois.getCount() > 1):
+			rm_nuc_rois.save(nuc_roi_zip_name + ".zip")		
+			
 		
 		# Annotate cells
 		for i, r in enumerate(rm_nuc_rois.getRoisAsArray()):
@@ -122,11 +123,23 @@ def findNucleus(imp, nuc_ch, rm_nuc_rois):
 		# Do not show this ROI manager	
 		# nuc.show()
 		IJ.run(nuc, "Create Selection", "");
-		IJ.run(nuc, "Analyze Particles...", "size=10-Infinity exclude clear overlay");
+		IJ.run(nuc, "Analyze Particles...", "size=" + str(minCellSize) + "-Infinity pixel exclude clear overlay");
+		
+		
 		composite_rois = nuc.getRoi()
-	
-		rm_nuc_rois_array = composite_rois.getRois()
-		for i, r in enumerate(rm_nuc_rois_array):
+		print(dir(composite_rois.getClass()))
+		print(composite_rois.getClass().__name__)
+				
+		# make polygon rois iteratable
+		# ShapeRoi works out of the box
+		
+		
+		if(composite_rois.getClass().__name__ == "PolygonRoi"):
+			rm_nuc_rois_array = [composite_rois]
+		else:
+			rm_nuc_rois_array = composite_rois.getRois()
+		
+		for r in rm_nuc_rois_array:
 			rm_nuc_rois.addRoi(r)
 		
 	if(check_nuc_roi):
@@ -138,12 +151,16 @@ def findNucleus(imp, nuc_ch, rm_nuc_rois):
 		
 		for r in rm_display.getRoisAsArray():
 			rm_nuc_rois.addRoi(r)
-			
+
 		rm_display.reset()
 		rm_display.close()
 		
-		nuc.changes = False
-		nuc.close()
+		if(WindowManager.getImageCount() == 0):
+			rm_display.close()
+			sys.exit()
+		else:
+			nuc.changes = False
+			nuc.close()
 	
 	# displayRois(rm_nuc_rois)
 	return(rm_nuc_rois)
@@ -213,7 +230,7 @@ def makeResultsTable(dstDir, nuc_seg_ext, nucleus_annotation_ext):
 	image_id = 0
 	
 	for p in nuc_annotation:
-		if(p.endswith(".zip")):
+		if(p.endswith(".zip") or p.endswith(".roi")):
 			# Nucleus segmentation
 			rm_nuc_rois = RoiManager(False)
 			rm_nuc_rois.open(p)
@@ -268,10 +285,11 @@ def displayRois(rm):
 
 
 # Input
-minCellSize = 500
+minCellSize = 50
 nuc_linewidt = 2
 nuc_seg_ext = "nuc_seg"
 nucleus_annotation_ext = "point_annotation"
+output_folder_name = "annotation"
 check_nuc_roi = True
 
 
