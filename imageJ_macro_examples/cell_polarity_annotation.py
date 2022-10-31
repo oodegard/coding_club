@@ -112,7 +112,7 @@ def findNucleus(imp, nuc_ch, rm_nuc_rois):
 	
 	# This must be a single slice image
 	nuc = Duplicator().run(imp, nuc_ch, nuc_ch, 1, 1, 1, 1)
-	IJ.run(nuc, "Gaussian Blur...", "sigma=2");
+	IJ.run(nuc, "Gaussian Blur...", "sigma=" + str(nucBlurSigma));
 	
 	IJ.setAutoThreshold(nuc, "MaxEntropy dark");
 	IJ.run(nuc, "Convert to Mask", "MaxEntropy dark")
@@ -123,12 +123,13 @@ def findNucleus(imp, nuc_ch, rm_nuc_rois):
 		# Do not show this ROI manager	
 		# nuc.show()
 		IJ.run(nuc, "Create Selection", "");
-		IJ.run(nuc, "Analyze Particles...", "size=" + str(minCellSize) + "-Infinity pixel exclude clear overlay");
+		
+		
+		#IJ.setThreshold(nuc, 255, 255)
+		IJ.run(nuc, "Analyze Particles...", "size=" + str(minNucSize) + "-Infinity pixel exclude clear overlay");
 		
 		
 		composite_rois = nuc.getRoi()
-		print(dir(composite_rois.getClass()))
-		print(composite_rois.getClass().__name__)
 				
 		# make polygon rois iteratable
 		# ShapeRoi works out of the box
@@ -285,12 +286,13 @@ def displayRois(rm):
 
 
 # Input
-minCellSize = 50
-nuc_linewidt = 2
+minNucSize = 100
+nuc_linewidt = 5
 nuc_seg_ext = "nuc_seg"
 nucleus_annotation_ext = "point_annotation"
 output_folder_name = "annotation"
 check_nuc_roi = True
+nucBlurSigma = 5
 
 
 # Run
