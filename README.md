@@ -7,3 +7,4 @@ Please feel free to do changes in this repository
 - Øyvind Ødegård Fougner `oodegard`
 - Kay Oliver Schink `koschink` https://github.com/koschink
 - Liv Anker Elfmark `livankerelfmark`
+- MP
