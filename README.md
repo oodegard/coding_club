@@ -6,3 +6,4 @@ Please feel free to do changes in this repository
 # Members of coding club (please add your name or alias here) 
 - Øyvind Ødegård Fougner `oodegard`
 - Kay Oliver Schink `koschink` https://github.com/koschink
+- Krizia Sagini `kriziaS`
