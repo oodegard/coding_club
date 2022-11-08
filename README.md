@@ -12,3 +12,6 @@ Please feel free to do changes in this repository
 - Eva Wenzel `evawenz` https://github.com/evawenz 
 - Yan `yanaudrey`
 - MP `mpbbql`
+
+# Your own ImageJ plugins
+I have created a new repository for imageJ plugins. It can be found here [coding_club_plugins](https://github.com/oodegard/coding_club_plugins). Follow the instructions on how to use it in the README.md file in that repository.
