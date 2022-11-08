@@ -2,9 +2,8 @@
 ## File    (label = "Output directory", style = "directory") dstFile
 #@ String  (label = "File extension", value=".tif") ext
 #@ String  (label = "File name contains", value = "") containString
-#@ boolean (label = "Keep directory structure when saving", value = true) keepDirectories
 #@ Integer (label = "Nucleus channel", min=1, value=1) nuc_ch
-
+#@ boolean (label = "Manual check on nuclear segmentation", value = true) check_nuc_roi
 
 # See also Process_Folder.ijm for a version of this code
 # in the ImageJ 1.x macro language.
@@ -38,11 +37,11 @@ def run():
 			# Check for file name pattern
 			if containString not in filename:
 				continue
-			process(srcDir, dstDir, root, filename, keepDirectories)
+			process(srcDir, dstDir, root, filename)
 	rt = makeResultsTable(dstDir, nuc_seg_ext, nucleus_annotation_ext)
 	rt.save(os.path.join(dstDir, "Results.tsv"))
  
-def process(srcDir, dstDir, currentDir, fileName, keepDirectories):
+def process(srcDir, dstDir, currentDir, fileName):
 	print "Processing:"
 	# Opening the image
 	print "Open image file", fileName
@@ -145,7 +144,8 @@ def findNucleus(imp, nuc_ch, rm_nuc_rois):
 		
 	if(check_nuc_roi):
 		rm_display = displayRois(rm_nuc_rois)
-		nuc.show()
+		nuc2 = Duplicator().run(imp, nuc_ch, nuc_ch, 1, 1, 1, 1)
+		nuc2.show()
 		myWait = WaitForUserDialog("Evaluate", "Edit segmentation in Roi Manager")
 		myWait.show()
 		rm_nuc_rois.reset()
@@ -160,8 +160,8 @@ def findNucleus(imp, nuc_ch, rm_nuc_rois):
 			rm_display.close()
 			sys.exit()
 		else:
-			nuc.changes = False
-			nuc.close()
+			nuc2.changes = False
+			nuc2.close()
 	
 	# displayRois(rm_nuc_rois)
 	return(rm_nuc_rois)
@@ -186,7 +186,8 @@ def annotate_roi(imp, single_roi, rm_annotations):
 	rm_display = displayRois(rm_annotations)
 
 	IJ.setTool("point")
-	IJ.run("Point Tool...", "type=Hybrid color=Yellow size=Small auto-next add")
+	IJ.run("Point Tool...", "type=Hybrid color=Yellow size=[Extra Large] auto-next add")
+	
 	rm_display.runCommand("Associate", "true")
 	rm_display.runCommand("Centered", "false")
 	rm_display.runCommand("UseNames", "false")
@@ -291,7 +292,7 @@ nuc_linewidt = 5
 nuc_seg_ext = "nuc_seg"
 nucleus_annotation_ext = "point_annotation"
 output_folder_name = "annotation"
-check_nuc_roi = False
+
 nucBlurSigma = 5
 
 
