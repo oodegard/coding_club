@@ -9,5 +9,6 @@ Please feel free to do changes in this repository
 - Liv Anker Elfmark `livankerelfmark`
 - Krizia Sagini `kriziaS`
 - lisette Sandoval `lisettemoni` https://github.com/lisettemoni
+- Eva Wenzel `evawenz` https://github.com/evawenz 
 - Yan `yanaudrey`
 - MP `mpbbql`
