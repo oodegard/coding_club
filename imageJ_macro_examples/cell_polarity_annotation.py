@@ -291,7 +291,7 @@ nuc_linewidt = 5
 nuc_seg_ext = "nuc_seg"
 nucleus_annotation_ext = "point_annotation"
 output_folder_name = "annotation"
-check_nuc_roi = True
+check_nuc_roi = False
 nucBlurSigma = 5
 
 
