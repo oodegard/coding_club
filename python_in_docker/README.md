@@ -18,7 +18,7 @@ print("hello there!")
 print(sys.version)
 ``` 
 6. make a `Dockerfile` in that project
-```bash
+```python
 FROM python:3.9 
 # Or any preferred Python version.
 ADD main.py .
@@ -27,12 +27,16 @@ CMD python main.py
 # Or enter the name of your unique directory and parameter set.
 ```
 7. Build your container using the Windows powershell terminal in VS code
-```
+```sh
 cd path\to\project\folder\python_in_docker
 docker build -t python-hello-docker .
 ```
 8. Check that python-hello-docker image was built
-`docker images` 
+```sh
+docker images
+``` 
 9. Run your docker container
-`docker run python-hello-docker`
+```sh
+docker run python-hello-docker
+```
 
