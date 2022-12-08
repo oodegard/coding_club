@@ -1,3 +1,9 @@
+# Presentations
+## 9th NorMIC Image Processing Workshop
+You can find the code I reffered to in my talk at [Presentations\20221129_NorMIC](https://github.com/oodegard/coding_club/tree/main/Presentations/20221129_NorMIC)
+
+
+
 # coding_club
 This is a repository for the coding club at the Oslo Radium Hospital
 
